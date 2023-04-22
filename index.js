@@ -1,16 +1,16 @@
 const io = require('socket.io')(8800, {
-    cors :{
-        origin: "http://localhost:4001",
+    cors: {
+        origin: "*",
     },
 })
 
 let activeUSers = []
 
-io.on("connection", (socket)=>{
+io.on("connection", (socket) => {
     // new user
-    socket.on('new-user-add', (newUserId)=>{
+    socket.on('new-user-add', (newUserId) => {
         // if user is not added previously
-        if(!activeUSers.some((user)=> user.userId === newUserId)){
+        if (!activeUSers.some((user) => user.userId === newUserId)) {
             activeUSers.push({
                 userId: newUserId,
                 socketId: socket.id
@@ -30,17 +30,17 @@ io.on("connection", (socket)=>{
             // user.receiverId.join("rec")
             // socket.join(user.receiverId)
 
-        //   io.to(user.socketId).emit('recieve-message', data);
-        //   io.to(user.socketId).emit('recieve-message', data);
-        //   io.to(user.socketId).emit('recieve-message', data)
+            //   io.to(user.socketId).emit('recieve-message', data);
+            //   io.to(user.socketId).emit('recieve-message', data);
+            //   io.to(user.socketId).emit('recieve-message', data)
             // io.to(user.receiverId).emit('recieve-message', data)
-        io.emit('recieve-message', data);
-          console.log("sent to ",user.socketId)
-          console.log("from ", cur_user.socketId)
+            io.emit('recieve-message', data);
+            console.log("sent to ", user.socketId)
+            console.log("from ", cur_user.socketId)
         }
-      });
-    socket.on("disconnect",()=>{
-        activeUSers = activeUSers.filter((user)=> user.socketId !== socket.id)
+    });
+    socket.on("disconnect", () => {
+        activeUSers = activeUSers.filter((user) => user.socketId !== socket.id)
         console.log("User Disconnected", activeUSers)
         io.emit('get-users', activeUSers)
     })
