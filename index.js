@@ -5,6 +5,7 @@ const io = require('socket.io')(8800, {
 })
 
 let activeUSers = []
+let activeProjects = []
 
 io.on("connection", (socket)=>{
     // new user
@@ -19,6 +20,17 @@ io.on("connection", (socket)=>{
         console.log("User Connected", activeUSers)
         io.emit('get-users', activeUSers)
     })
+    socket.on('new-project-add', (newProjectId)=>{
+        // if user is not added previously
+        if(!activeProjects.some((project)=> project.projectId === newProjectId)){
+            activeProjects.push({
+                projectId: newProjectId,
+                socketId: socket.id
+            })
+        }
+        console.log("Project Connected", activeProjects)
+        io.emit('get-Projects', activeProjects)
+    })
     socket.on("send-message", (data) => {
         const { receiverId } = data;
         const { senderId } = data;
@@ -27,13 +39,6 @@ io.on("connection", (socket)=>{
         console.log("Sending from socket to :", receiverId)
         console.log("Data: ", data)
         if (user) {
-            // user.receiverId.join("rec")
-            // socket.join(user.receiverId)
-
-        //   io.to(user.socketId).emit('recieve-message', data);
-        //   io.to(user.socketId).emit('recieve-message', data);
-        //   io.to(user.socketId).emit('recieve-message', data)
-            // io.to(user.receiverId).emit('recieve-message', data)
         io.emit('recieve-message', data);
           console.log("sent to ",user.socketId)
           console.log("from ", cur_user.socketId)
